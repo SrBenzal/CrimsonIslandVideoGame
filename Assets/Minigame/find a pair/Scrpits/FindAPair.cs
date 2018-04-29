@@ -6,18 +6,21 @@ using UnityEngine.UI;
 public class FindAPair : MonoBehaviour {
     public GameObject card;
     public GameObject parent;
+    public GameObject firstCard;
+    public GameObject backgorund;
+    public GameObject text;
+
     public int row;
     public int col;
-    public GameObject backgorund;
     private float backgorunWidth;
     private float backgroundHeight;
     public float gapX;
     public float gapY;
     private int cont;
-    public GameObject firstCard;
     private List<int> numbers;
 
-    private int Capacity;
+
+    public int cardsShowed;
     private bool showingCard;
 
     // Use this for initialization
@@ -51,7 +54,7 @@ public class FindAPair : MonoBehaviour {
             numbers.Add(Mathf.FloorToInt((i / 2) + 1));
             //Debug.Log("Metemos en la lista el " + Mathf.FloorToInt(i / 2 + 1));
         }
-        Capacity = numbers.Capacity;
+        cardsShowed = 0;
         showingCard = false;
         // Instanciate all buttons 
         // where may be stay
@@ -64,6 +67,7 @@ public class FindAPair : MonoBehaviour {
         float cardPositionStartY = (backgroundHeight / 2) - gapY;
         //Debug.Log("Position of the first card: (" + cardPositionStartX + " ," + cardPositionStartY + ")");
         parent.GetComponent<RectTransform>().localPosition = new Vector2(-cardPositionStartX, cardPositionStartY);
+        //Debug.Log(cardsShowed);
         for (int i = 0; i < row; i++)
             for (int j = 0; j < col; j++)
             {
@@ -96,6 +100,7 @@ public class FindAPair : MonoBehaviour {
             {
                 firstCard.GetComponent<Card>().findPair = true;
                 c.GetComponent<Card>().findPair = true;
+                cardsShowed += 2;
                 //Debug.Log("PAREJA ENCONTRADA");
             }
             else
@@ -107,7 +112,13 @@ public class FindAPair : MonoBehaviour {
             }
             firstCard = null;
         }
-   
+        Debug.Log(cardsShowed);
+        if(cardsShowed == row * col)
+        {
+            Destroy(parent, .5f);
+            Instantiate(text, Vector2.zero, Quaternion.identity, parent.GetComponent<Transform>());
+        }
+
     }
     private bool CompareCards(GameObject c1, GameObject c2)
     {
