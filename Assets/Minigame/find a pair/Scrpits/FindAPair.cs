@@ -5,22 +5,19 @@ using UnityEngine.UI;
 
 public class FindAPair : MonoBehaviour {
     public GameObject card;
-    public GameObject parent;
     public GameObject firstCard;
     public GameObject backgorund;
     public GameObject text;
 
     public int row;
     public int col;
+	private int count;
     private float backgorunWidth;
     private float backgroundHeight;
-    public float gapX;
-    public float gapY;
-    private int cont;
     private List<int> numbers;
 
 
-    public int cardsShowed;
+	public int cardsShowed;
     private bool showingCard;
 
     // Use this for initialization
@@ -39,17 +36,20 @@ public class FindAPair : MonoBehaviour {
             row = 4;
         if (col < 1)
             col = 4;
-        if ((row * col) % 2 != 0)
+		count = row * col;
+		//Debug.Log (count);
+        if ((count) % 2 != 0)
         {
             row = 4;
             col = 4;
+			count = row * col;
         }
-        if (gapY < 0.5 || gapY > backgroundHeight / 4)
+        /*if (gapY < 0.5 || gapY > backgroundHeight / 4)
             gapY = 100f;
         if (gapX < 50 || gapX > backgorunWidth / 3)
-            gapX = 300f;
+            gapX = 300f;*/
         numbers = new List<int>();
-        for (int i = 0; i < col * row; i++)
+        for (int i = 0; i < count; i++)
         {
             numbers.Add(Mathf.FloorToInt((i / 2) + 1));
             //Debug.Log("Metemos en la lista el " + Mathf.FloorToInt(i / 2 + 1));
@@ -59,21 +59,17 @@ public class FindAPair : MonoBehaviour {
         // Instanciate all buttons 
         // where may be stay
         // ------------------------     
-        float CardSizeX = (backgorunWidth - gapX*2) / col;
-        float CardSizeY = (backgroundHeight - gapY*2) / row;
+        float CardSizeX = (backgroundHeight /*- gapY*/) / row;
+		float CardSizeY = CardSizeX;
         card.GetComponent<RectTransform>().sizeDelta = new Vector2(CardSizeX, CardSizeY);
         //Debug.Log("Size of the card : " + CardSizeX + " x " + CardSizeY );
-        float cardPositionStartX = (backgorunWidth / 2) - gapX;
-        float cardPositionStartY = (backgroundHeight / 2) - gapY;
-        //Debug.Log("Position of the first card: (" + cardPositionStartX + " ," + cardPositionStartY + ")");
-        parent.GetComponent<RectTransform>().localPosition = new Vector2(-cardPositionStartX, cardPositionStartY);
         //Debug.Log(cardsShowed);
-        for (int i = 0; i < row; i++)
-            for (int j = 0; j < col; j++)
+        for (int i = 0; i < col; i++)
+            for (int j = 0; j < row; j++)
             {
-                Vector2 positionCard = new Vector2(CardSizeX * i, CardSizeY * -j);           
+				Vector2 positionCard = new Vector2 (backgorunWidth/(col*2) + (backgorunWidth/col) * i, (backgroundHeight/(row*2) + (backgroundHeight/row) * j) - backgroundHeight);          
                 //Debug.Log("(" + positionCard.x + " ," + positionCard.y + ")");
-                GameObject a = Instantiate(card, Vector2.zero, Quaternion.identity, parent.GetComponent<Transform>());
+				GameObject a = Instantiate(card, backgorund.transform);
                 a.GetComponent<RectTransform>().localPosition = positionCard;
                 GetValue(a);                
             }
@@ -82,11 +78,12 @@ public class FindAPair : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-		
+		//Debug.Log ("hay: " + count + " cartas y se han mostrado: " + cardsShowed);
 	}
     public void FlippedCard(GameObject c)
     {
-        //Debug.Log(firstCard);
+		//Debug.Log("Aqui entra asi: " + cardsShowed);
+        //Debug.Log("xd" + firstCard);
         if (showingCard) return;
         if (firstCard == null)
         {
@@ -100,7 +97,7 @@ public class FindAPair : MonoBehaviour {
             {
                 firstCard.GetComponent<Card>().findPair = true;
                 c.GetComponent<Card>().findPair = true;
-                cardsShowed += 2;
+				cardsShowed += 2;
                 //Debug.Log("PAREJA ENCONTRADA");
             }
             else
@@ -111,14 +108,17 @@ public class FindAPair : MonoBehaviour {
                 //Debug.Log("Mala Pareja");
             }
             firstCard = null;
+			//Debug.Log("Ha mostrdo: " + cardsShowed + " Y hay " + count + " cartas. NO me lo creo: " + (cardsShowed == count));
+			if(cardsShowed == count)
+			{
+				foreach (Transform t in backgorund.transform) 
+				{
+					
+					Destroy(t.gameObject);
+				}
+				Instantiate(text, gameObject.transform);
+			}
         }
-        Debug.Log(cardsShowed);
-        if(cardsShowed == row * col)
-        {
-            Destroy(parent, .5f);
-            Instantiate(text, Vector2.zero, Quaternion.identity, parent.GetComponent<Transform>());
-        }
-
     }
     private bool CompareCards(GameObject c1, GameObject c2)
     {
@@ -136,4 +136,8 @@ public class FindAPair : MonoBehaviour {
     {
         showingCard = param;
     }
+	public int GetcardsShowed()
+	{
+		return this.cardsShowed;
+	}	
 }

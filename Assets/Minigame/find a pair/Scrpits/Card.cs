@@ -21,6 +21,7 @@ public class Card : MonoBehaviour
         flipInTime = false;
         button = GetComponent<Button>();
         button.onClick.AddListener(Clicked);
+		game = transform.parent.transform.parent.gameObject;
         time = 0;
     }
 	
@@ -50,7 +51,7 @@ public class Card : MonoBehaviour
         if (!state && !findPair)
         {
             //Debug.Log("agsdaf");
-            game.GetComponent<FindAPair>().FlippedCard(gameObject);
+			game.GetComponent<FindAPair>().FlippedCard(gameObject);
         }
     }
     public void Flip()
